@@ -67,10 +67,12 @@ public class AuthorizationServerConfig {
 	@Autowired
 	private UserDetailsService userDetailsService;
 
+	// Aplica configurações de segurança para o servidor de autorização
 	@Bean
 	@Order(2)
 	public SecurityFilterChain asSecurityFilterChain(HttpSecurity http) throws Exception {
 
+		// Configura o Authorization Service para funcionar com o Spring Security
 		OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
 
 		// @formatter:off
@@ -95,11 +97,13 @@ public class AuthorizationServerConfig {
 		return new InMemoryOAuth2AuthorizationConsentService();
 	}
 
+	// define o codificador de senha
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
 
+	// Configura os clientes registrados que podem acessar o servidor
 	@Bean
 	public RegisteredClientRepository registeredClientRepository() {
 		// @formatter:off
@@ -118,6 +122,7 @@ public class AuthorizationServerConfig {
 		return new InMemoryRegisteredClientRepository(registeredClient);
 	}
 
+	// define config do token como formato (JWT) e tempo de vida
 	@Bean
 	public TokenSettings tokenSettings() {
 		// @formatter:off
@@ -138,6 +143,7 @@ public class AuthorizationServerConfig {
 		return AuthorizationServerSettings.builder().build();
 	}
 
+	// Configura o gerador de tokens OAuth2 (JWT)
 	@Bean
 	public OAuth2TokenGenerator<? extends OAuth2Token> tokenGenerator() {
 		NimbusJwtEncoder jwtEncoder = new NimbusJwtEncoder(jwkSource());
@@ -147,6 +153,7 @@ public class AuthorizationServerConfig {
 		return new DelegatingOAuth2TokenGenerator(jwtGenerator, accessTokenGenerator);
 	}
 
+	//  Personaliza o token JWT gerado
 	@Bean
 	public OAuth2TokenCustomizer<JwtEncodingContext> tokenCustomizer() {
 		return context -> {
@@ -163,11 +170,13 @@ public class AuthorizationServerConfig {
 		};
 	}
 
+	// decodificador do token
 	@Bean
 	public JwtDecoder jwtDecoder(JWKSource<SecurityContext> jwkSource) {
 		return OAuth2AuthorizationServerConfiguration.jwtDecoder(jwkSource);
 	}
 
+	//  cria um provedor de chaves JWT com a chave RSA gerada.
 	@Bean
 	public JWKSource<SecurityContext> jwkSource() {
 		RSAKey rsaKey = generateRsa();
@@ -175,6 +184,7 @@ public class AuthorizationServerConfig {
 		return (jwkSelector, securityContext) -> jwkSelector.select(jwkSet);
 	}
 
+	//  gerar um par de chaves RSA para o JWT.
 	private static RSAKey generateRsa() {
 		KeyPair keyPair = generateRsaKey();
 		RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
@@ -182,6 +192,7 @@ public class AuthorizationServerConfig {
 		return new RSAKey.Builder(publicKey).privateKey(privateKey).keyID(UUID.randomUUID().toString()).build();
 	}
 
+	//  gerar um par de chaves RSA para o JWT.
 	private static KeyPair generateRsaKey() {
 		KeyPair keyPair;
 		try {

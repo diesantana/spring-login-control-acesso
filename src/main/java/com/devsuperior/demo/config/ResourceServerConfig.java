@@ -30,6 +30,7 @@ public class ResourceServerConfig {
 	@Value("${cors.origins}")
 	private String corsOrigins;
 
+	// Configuração de Filtro de Segurança para Console H2 (Perfil de Teste)
 	@Bean
 	@Profile("test")
 	@Order(1)
@@ -39,7 +40,8 @@ public class ResourceServerConfig {
 				.headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable()));
 		return http.build();
 	}
-
+	
+	// Configuração de Filtro de Segurança para Resource Server
 	@Bean
 	@Order(3)
 	public SecurityFilterChain rsSecurityFilterChain(HttpSecurity http) throws Exception {
@@ -50,7 +52,8 @@ public class ResourceServerConfig {
 		http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
 		return http.build();
 	}
-
+	
+	// Configuração do Conversor de Autenticação JWT
 	@Bean
 	public JwtAuthenticationConverter jwtAuthenticationConverter() {
 		JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
@@ -62,6 +65,8 @@ public class ResourceServerConfig {
 		return jwtAuthenticationConverter;
 	}
 
+	
+	// Configuração do CORS
 	@Bean
 	CorsConfigurationSource corsConfigurationSource() {
 
@@ -78,6 +83,7 @@ public class ResourceServerConfig {
 		return source;
 	}
 
+	// Registro do Filtro CORS
 	@Bean
 	FilterRegistrationBean<CorsFilter> corsFilter() {
 		FilterRegistrationBean<CorsFilter> bean = new FilterRegistrationBean<>(
